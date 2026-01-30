@@ -24,28 +24,39 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# 3. Subir archivos vía FTP usando curl
+# 3. Subir app_offline.htm para detener el sitio temporalmente
+echo "⏹️ Deteniendo la aplicación temporalmente (app_offline.htm)..."
+echo "<h1>Actualizando aplicacion... por favor espera unos segundos.</h1>" > app_offline.htm
+curl -T "app_offline.htm" -u "$FTP_USER:$FTP_PASS" "$FTP_URL/app_offline.htm" --silent
+
+# 4. Subir archivos vía FTP usando curl
 echo "🚚 Subiendo archivos al servidor FTP..."
 
 # Subir cada archivo recursivamente
-cd "$PUBLISH_DIR"
-find . -type f | while read -r file; do
-    # Limpiar el path del archivo
-    remote_file="${file#./}"
-    remote_dir=$(dirname "$remote_file")
-    
-    # Crear subdirectorios remotos si es necesario
-    if [ "$remote_dir" != "." ]; then
-        # Intentar crear el directorio. Se ignora el error si ya existe.
-        curl -u "$FTP_USER:$FTP_PASS" "$FTP_URL/" -Q "MKD $remote_dir" --silent --output /dev/null
-    fi
-    
-    echo "  -> Subiendo: $remote_file"
-    curl -T "$file" -u "$FTP_USER:$FTP_PASS" "$FTP_URL/$remote_file" --silent
-done
+(
+    cd "$PUBLISH_DIR"
+    find . -type f | while read -r file; do
+        # Limpiar el path del archivo
+        remote_file="${file#./}"
+        remote_dir=$(dirname "$remote_file")
+        
+        # Crear subdirectorios remotos si es necesario
+        if [ "$remote_dir" != "." ]; then
+            # Intentar crear el directorio. Se ignora el error si ya existe.
+            curl -u "$FTP_USER:$FTP_PASS" "$FTP_URL/" -Q "MKD $remote_dir" --silent --output /dev/null
+        fi
+        
+        echo "  -> Subiendo: $remote_file"
+        curl -T "$file" -u "$FTP_USER:$FTP_PASS" "$FTP_URL/$remote_file" --silent
+    done
+)
 
 if [ $? -eq 0 ]; then
     echo "✅ Archivos subidos con éxito al FTP."
+    # 5. Eliminar app_offline.htm para reactivar el sitio
+    echo "▶️ Reactivando la aplicación..."
+    # Usamos -X DELE que es más compatible para borrar archivos vía FTP con curl
+    curl -u "$FTP_USER:$FTP_PASS" "$FTP_URL/app_offline.htm" -X DELE --silent --output /dev/null
     echo "📂 Destino: $FTP_URL"
 else
     echo "❌ Hubo un error durante la subida FTP."
@@ -53,5 +64,5 @@ fi
 
 # Limpiar local
 echo "🧹 Limpiando archivos temporales..."
-cd ..
-rm -rf $PUBLISH_DIR
+rm -rf "$PUBLISH_DIR"
+rm -f app_offline.htm

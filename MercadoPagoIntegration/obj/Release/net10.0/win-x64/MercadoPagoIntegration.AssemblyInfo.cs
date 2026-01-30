@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MercadoPagoIntegration")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b21759ea55f0b1d22369aeccda1bec7c77b41c43")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c363d93f44275ea1313eca06b400336d71de39a8")]
 [assembly: System.Reflection.AssemblyProductAttribute("MercadoPagoIntegration")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MercadoPagoIntegration")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
