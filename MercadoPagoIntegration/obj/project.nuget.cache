@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "d5RuHIQZe0U=",
+  "dgSpecHash": "Cwu3lcERzoM=",
   "success": true,
   "projectFilePath": "/home/juan/dev/mp/MercadoPagoIntegration/MercadoPagoIntegration.csproj",
   "expectedPackageFiles": [
@@ -9,6 +9,7 @@
     "/home/juan/.nuget/packages/microsoft.openapi/2.0.0/microsoft.openapi.2.0.0.nupkg.sha512",
     "/home/juan/.nuget/packages/microsoft.win32.systemevents/6.0.0/microsoft.win32.systemevents.6.0.0.nupkg.sha512",
     "/home/juan/.nuget/packages/newtonsoft.json/13.0.1/newtonsoft.json.13.0.1.nupkg.sha512",
+    "/home/juan/.nuget/packages/scalar.aspnetcore/2.12.24/scalar.aspnetcore.2.12.24.nupkg.sha512",
     "/home/juan/.nuget/packages/system.configuration.configurationmanager/6.0.0/system.configuration.configurationmanager.6.0.0.nupkg.sha512",
     "/home/juan/.nuget/packages/system.drawing.common/6.0.0/system.drawing.common.6.0.0.nupkg.sha512",
     "/home/juan/.nuget/packages/system.security.cryptography.protecteddata/6.0.0/system.security.cryptography.protecteddata.6.0.0.nupkg.sha512",

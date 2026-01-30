@@ -10,6 +10,7 @@
 /home/juan/dev/mp/publish/Microsoft.OpenApi.dll
 /home/juan/dev/mp/publish/Microsoft.Win32.SystemEvents.dll
 /home/juan/dev/mp/publish/Newtonsoft.Json.dll
+/home/juan/dev/mp/publish/Scalar.AspNetCore.dll
 /home/juan/dev/mp/publish/System.Configuration.ConfigurationManager.dll
 /home/juan/dev/mp/publish/System.Drawing.Common.dll
 /home/juan/dev/mp/publish/System.Security.Cryptography.ProtectedData.dll

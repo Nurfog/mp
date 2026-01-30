@@ -43,9 +43,9 @@ namespace MercadoPagoIntegration.Services
                 },
                 BackUrls = new PreferenceBackUrlsRequest
                 {
-                    Success = "https://localhost:5298/success",
-                    Failure = "https://localhost:5298/failure",
-                    Pending = "https://localhost:5298/pending",
+                    Success = "https://apimp.norteamericano.cl/success",
+                    Failure = "https://apimp.norteamericano.cl/failure",
+                    Pending = "https://apimp.norteamericano.cl/pending",
                 },
                 AutoReturn = "approved",
             };
