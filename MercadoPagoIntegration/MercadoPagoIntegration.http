@@ -1,0 +1,6 @@
+@MercadoPagoIntegration_HostAddress = http://localhost:5298
+
+GET {{MercadoPagoIntegration_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

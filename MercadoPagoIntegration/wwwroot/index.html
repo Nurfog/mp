@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mercado Pago - Test Checkout</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #009ee3;
+            --primary-dark: #007bb1;
+            --accent: #2ecc71;
+            --bg: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text: #f8fafc;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background-image: radial-gradient(circle at top right, rgba(0, 158, 227, 0.15), transparent),
+                radial-gradient(circle at bottom left, rgba(46, 204, 113, 0.1), transparent);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-align: center;
+            background: linear-gradient(to right, #009ee3, #2ecc71);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p.subtitle {
+            text-align: center;
+            color: #94a3b8;
+            margin-bottom: 32px;
+            font-size: 0.95rem;
+        }
+
+        .product-card {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 32px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .item-label {
+            color: #94a3b8;
+        }
+
+        .item-value {
+            font-weight: 600;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .total-value {
+            color: var(--accent);
+        }
+
+        button {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 158, 227, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            background: #475569;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loader {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .status-msg {
+            margin-top: 16px;
+            text-align: center;
+            font-size: 0.85rem;
+            min-height: 20px;
+        }
+
+        .error {
+            color: #ef4444;
+        }
+
+        .success {
+            color: var(--accent);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>Checkout Pro</h1>
+        <p class="subtitle">Prueba tu integración en Chile</p>
+
+        <div class="product-card">
+            <div class="item-row">
+                <span class="item-label">Producto</span>
+                <span class="item-value">Plan Premium Mensual</span>
+            </div>
+            <div class="item-row">
+                <span class="item-label">Cantidad</span>
+                <span class="item-value">1</span>
+            </div>
+            <div class="total-row">
+                <span>Total</span>
+                <span class="total-value">$15.000 CLP</span>
+            </div>
+        </div>
+
+        <button id="checkout-btn">
+            <span class="loader" id="loader"></span>
+            <span id="btn-text">Pagar con Mercado Pago</span>
+        </button>
+
+        <div id="status" class="status-msg"></div>
+        <div id="walletBrick_container"></div>
+    </div>
+
+    <script src="https://sdk.mercadopago.com/js/v2"></script>
+    <script>
+        const btn = document.getElementById('checkout-btn');
+        const loader = document.getElementById('loader');
+        const btnText = document.getElementById('btn-text');
+        const status = document.getElementById('status');
+
+        btn.addEventListener('click', async () => {
+            // UI State
+            btn.disabled = true;
+            loader.style.display = 'block';
+            btnText.innerText = 'Generando preferencia...';
+            status.innerText = '';
+            status.className = 'status-msg';
+
+            try {
+                const response = await fetch('/api/Checkout/create-preference', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        title: 'Plan Premium Mensual',
+                        price: 15000,
+                        quantity: 1
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.id) {
+                    status.innerText = 'Cargando botón de pago...';
+                    status.classList.add('success');
+
+                    // Inicializar el SDK de Mercado Pago
+                    const mp = new MercadoPago(data.publicKey);
+                    const bricksBuilder = mp.bricks();
+
+                    // Renderizar el Wallet Brick
+                    await bricksBuilder.create("wallet", "walletBrick_container", {
+                        initialization: {
+                            preferenceId: data.id,
+                            redirectMode: 'modal' // O 'self'
+                        },
+                        customization: {
+                            texts: {
+                                valueProp: 'smart_option',
+                            }
+                        }
+                    });
+
+                    // Ocultar el botón original y loader ya que ahora tenemos el Brick
+                    btn.style.display = 'none';
+                    loader.style.display = 'none';
+                    status.innerText = '¡Listo! Usa el botón de arriba para pagar.';
+                } else {
+                    throw new Error(data.error || 'Error al crear la preferencia');
+                }
+            } catch (err) {
+                console.error(err);
+                status.innerText = 'Error: ' + err.message;
+                status.classList.add('error');
+                btn.disabled = false;
+                loader.style.display = 'none';
+                btnText.innerText = 'Reintentar Pago';
+            }
+        });
+    </script>
+
+</body>
+
+</html>

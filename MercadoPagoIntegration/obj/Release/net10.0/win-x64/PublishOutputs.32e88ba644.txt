@@ -1,0 +1,17 @@
+/home/juan/dev/mp/publish/MercadoPagoIntegration.exe
+/home/juan/dev/mp/publish/appsettings.Development.json
+/home/juan/dev/mp/publish/appsettings.json
+/home/juan/dev/mp/publish/MercadoPagoIntegration.dll
+/home/juan/dev/mp/publish/MercadoPagoIntegration.deps.json
+/home/juan/dev/mp/publish/MercadoPagoIntegration.runtimeconfig.json
+/home/juan/dev/mp/publish/MercadoPagoIntegration.pdb
+/home/juan/dev/mp/publish/MercadoPago.dll
+/home/juan/dev/mp/publish/Microsoft.AspNetCore.OpenApi.dll
+/home/juan/dev/mp/publish/Microsoft.OpenApi.dll
+/home/juan/dev/mp/publish/Microsoft.Win32.SystemEvents.dll
+/home/juan/dev/mp/publish/Newtonsoft.Json.dll
+/home/juan/dev/mp/publish/System.Configuration.ConfigurationManager.dll
+/home/juan/dev/mp/publish/System.Drawing.Common.dll
+/home/juan/dev/mp/publish/System.Security.Cryptography.ProtectedData.dll
+/home/juan/dev/mp/publish/System.Security.Permissions.dll
+/home/juan/dev/mp/publish/System.Windows.Extensions.dll
