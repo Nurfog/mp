@@ -17,14 +17,17 @@ namespace MercadoPagoIntegration.Services
 
     public class MercadoPagoService : IMercadoPagoService
     {
-        public MercadoPagoService()
+        private readonly string _backUrlBase;
+
+        public MercadoPagoService(IConfiguration configuration)
         {
+            _backUrlBase = configuration["MercadoPago:BackUrlBase"] ?? "https://apimp.norteamericano.cl";
         }
 
         public async Task<Preference> CreatePreferenceAsync(string title, decimal price, int quantity, string accessToken)
         {
             // Nota: En un entorno de producción con múltiples usuarios concurrentes usando diferentes tokens,
-            // MercadoPagoConfig.AccessToken (estático) no es thread-safe. 
+            // MercadoPagoConfig.AccessToken (estático) no es thread-safe.
             // Preferiblemente usar RequestOptions si la versión del SDK lo soporta en CreateAsync.
             MercadoPagoConfig.AccessToken = accessToken;
 
@@ -36,16 +39,15 @@ namespace MercadoPagoIntegration.Services
                     {
                         Title = title,
                         Quantity = quantity,
-                        CurrencyId = "CLP", // Ajustado para Chile
+                        CurrencyId = "USD",
                         UnitPrice = price,
-
                     }
                 },
                 BackUrls = new PreferenceBackUrlsRequest
                 {
-                    Success = "https://apimp.norteamericano.cl/success",
-                    Failure = "https://apimp.norteamericano.cl/failure",
-                    Pending = "https://apimp.norteamericano.cl/pending",
+                    Success = $"{_backUrlBase}/api/checkout/success",
+                    Failure = $"{_backUrlBase}/api/checkout/failure",
+                    Pending = $"{_backUrlBase}/api/checkout/pending",
                 },
                 AutoReturn = "approved",
             };
@@ -62,6 +64,7 @@ namespace MercadoPagoIntegration.Services
                 throw;
             }
         }
+
         public async Task<Payment> GetPaymentAsync(long paymentId, string accessToken)
         {
             MercadoPagoConfig.AccessToken = accessToken;
@@ -79,4 +82,3 @@ namespace MercadoPagoIntegration.Services
         }
     }
 }
-

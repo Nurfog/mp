@@ -22,12 +22,11 @@ namespace MercadoPagoIntegration.Controllers
             try
             {
                 var preference = await _mercadoPagoService.CreatePreferenceAsync(request.Title, request.Price, request.Quantity, request.AccessToken);
-                return Ok(new { 
-                    id = preference.Id, 
+                return Ok(new {
+                    id = preference.Id,
                     init_point = preference.InitPoint,
                     publicKey = request.PublicKey
                 });
-
             }
             catch (System.Exception ex)
             {
@@ -35,30 +34,91 @@ namespace MercadoPagoIntegration.Controllers
             }
         }
 
-        [HttpPost("webhook")]
-        public async Task<IActionResult> Webhook([FromQuery] string topic, [FromQuery] string id)
+        // ─── BackUrl: retorno tras pago aprobado ───────────────────────────
+        [HttpGet("success")]
+        public IActionResult PaymentSuccess(
+            [FromQuery(Name = "payment_id")] string? paymentId,
+            [FromQuery(Name = "status")] string? status,
+            [FromQuery(Name = "external_reference")] string? externalReference,
+            [FromQuery(Name = "merchant_order_id")] string? merchantOrderId)
         {
-            Console.WriteLine($"Webhook recibido: Topic={topic}, ID={id}");
+            Console.WriteLine($"[BackUrl] SUCCESS - payment_id={paymentId}, status={status}, ref={externalReference}");
+            return Ok(new
+            {
+                result = "success",
+                payment_id = paymentId,
+                status = status,
+                external_reference = externalReference,
+                merchant_order_id = merchantOrderId,
+                message = "Pago aprobado correctamente."
+            });
+        }
+
+        // ─── BackUrl: retorno tras pago rechazado ──────────────────────────
+        [HttpGet("failure")]
+        public IActionResult PaymentFailure(
+            [FromQuery(Name = "payment_id")] string? paymentId,
+            [FromQuery(Name = "status")] string? status,
+            [FromQuery(Name = "external_reference")] string? externalReference)
+        {
+            Console.WriteLine($"[BackUrl] FAILURE - payment_id={paymentId}, status={status}, ref={externalReference}");
+            return Ok(new
+            {
+                result = "failure",
+                payment_id = paymentId,
+                status = status,
+                external_reference = externalReference,
+                message = "El pago fue rechazado o cancelado."
+            });
+        }
+
+        // ─── BackUrl: retorno tras pago pendiente ──────────────────────────
+        [HttpGet("pending")]
+        public IActionResult PaymentPending(
+            [FromQuery(Name = "payment_id")] string? paymentId,
+            [FromQuery(Name = "status")] string? status,
+            [FromQuery(Name = "external_reference")] string? externalReference)
+        {
+            Console.WriteLine($"[BackUrl] PENDING - payment_id={paymentId}, status={status}, ref={externalReference}");
+            return Ok(new
+            {
+                result = "pending",
+                payment_id = paymentId,
+                status = status,
+                external_reference = externalReference,
+                message = "El pago está pendiente de confirmación."
+            });
+        }
+
+        // ─── Webhook de notificaciones IPN ────────────────────────────────
+        [HttpPost("webhook")]
+        public async Task<IActionResult> Webhook(
+            [FromQuery] string? topic,
+            [FromQuery] string? id,
+            [FromQuery] string? access_token)
+        {
+            Console.WriteLine($"[Webhook] recibido: Topic={topic}, ID={id}");
 
             if (topic == "payment" && long.TryParse(id, out long paymentId))
             {
+                if (string.IsNullOrEmpty(access_token))
+                {
+                    Console.WriteLine("[Webhook] ADVERTENCIA: access_token no recibido. No se puede obtener el detalle del pago.");
+                    return Ok(new { warning = "access_token requerido para consultar el pago." });
+                }
+
                 try
                 {
-                    // NOTA: Para obtener el pago necesitamos un Access Token.
-                    // En una implementación real, buscarías el token asociado al pago en tu DB
-                    // o usarías un token maestro si aplica.
-                    // Por ahora, lo dejaremos como un comentario explicativo.
-                    // var payment = await _mercadoPagoService.GetPaymentAsync(paymentId, "TU_ACCESS_TOKEN");
-                    // Console.WriteLine($"Estado del pago {paymentId}: {payment.Status}");
-                    
-                    Console.WriteLine($"Procesando notificación de pago para ID: {paymentId}");
+                    var payment = await _mercadoPagoService.GetPaymentAsync(paymentId, access_token);
+                    Console.WriteLine($"[Webhook] Pago {paymentId}: status={payment.Status}, amount={payment.TransactionAmount}");
+                    // TODO: Aquí puedes actualizar tu DB, activar el servicio del usuario, etc.
                 }
                 catch (System.Exception ex)
                 {
-                    Console.WriteLine($"Error procesando webhook: {ex.Message}");
+                    Console.WriteLine($"[Webhook] Error procesando pago {paymentId}: {ex.Message}");
                 }
             }
-            
+
             return Ok();
         }
     }

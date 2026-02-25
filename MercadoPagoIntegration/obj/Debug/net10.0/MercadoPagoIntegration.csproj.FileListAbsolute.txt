@@ -45,6 +45,6 @@
 /home/juan/dev/mp/MercadoPagoIntegration/obj/Debug/net10.0/MercadoPagoIntegration.genruntimeconfig.cache
 /home/juan/dev/mp/MercadoPagoIntegration/obj/Debug/net10.0/ref/MercadoPagoIntegration.dll
 /home/juan/dev/mp/MercadoPagoIntegration/bin/Debug/net10.0/MercadoPagoIntegration.staticwebassets.runtime.json
-/home/juan/dev/mp/MercadoPagoIntegration/obj/Debug/net10.0/compressed/bjeuoovgrr-{0}-js9crey18a-js9crey18a.gz
 /home/juan/dev/mp/MercadoPagoIntegration/obj/Debug/net10.0/MercadoPagoIntegration.sourcelink.json
 /home/juan/dev/mp/MercadoPagoIntegration/bin/Debug/net10.0/Scalar.AspNetCore.dll
+/home/juan/dev/mp/MercadoPagoIntegration/obj/Debug/net10.0/compressed/bjeuoovgrr-{0}-bzddo1mijt-bzddo1mijt.gz
