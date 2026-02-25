@@ -29,10 +29,14 @@ Genera un `init_point` para redirigir al cliente al entorno de pago de Mercado P
     "title": "Nombre del Producto",
     "price": 99.99,
     "quantity": 1,
+    "currency": "USD",
     "accessToken": "TU_ACCESS_TOKEN",
     "publicKey": "TU_PUBLIC_KEY"
   }
   ```
+
+  > Monedas soportadas: `USD`, `ARS`, `BRL`, `CLP`, `COP`, `MXN`, `PEN`, `UYU`  
+  > Default: `USD`
 - **Respuesta Exitosa (200 OK)**:
   ```json
   {

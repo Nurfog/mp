@@ -21,7 +21,7 @@ namespace MercadoPagoIntegration.Controllers
         {
             try
             {
-                var preference = await _mercadoPagoService.CreatePreferenceAsync(request.Title, request.Price, request.Quantity, request.AccessToken);
+                var preference = await _mercadoPagoService.CreatePreferenceAsync(request.Title, request.Price, request.Quantity, request.AccessToken, request.Currency);
                 return Ok(new {
                     id = preference.Id,
                     init_point = preference.InitPoint,

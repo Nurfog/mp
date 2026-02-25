@@ -208,7 +208,8 @@
             letter-spacing: 0.05em;
         }
 
-        .field input {
+        .field input,
+        .field select {
             width: 100%;
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -221,7 +222,8 @@
             transition: border-color 0.2s;
         }
 
-        .field input:focus {
+        .field input:focus,
+        .field select:focus {
             border-color: var(--primary);
         }
     </style>
@@ -244,13 +246,26 @@
             </div>
             <div class="total-row">
                 <span>Total</span>
-                <span class="total-value">$99.99 USD</span>
+                <span class="total-value" id="display-total">$99.99 USD</span>
             </div>
         </div>
 
         <div class="credentials-section">
             <details>
                 <summary>⚙️ Credenciales de Mercado Pago (modo prueba)</summary>
+                <div class="field">
+                    <label for="currency">Moneda</label>
+                    <select id="currency">
+                        <option value="USD" selected>USD — Dólar</option>
+                        <option value="CLP">CLP — Peso Chileno</option>
+                        <option value="ARS">ARS — Peso Argentino</option>
+                        <option value="COP">COP — Peso Colombiano</option>
+                        <option value="MXN">MXN — Peso Mexicano</option>
+                        <option value="BRL">BRL — Real Brasileño</option>
+                        <option value="PEN">PEN — Sol Peruano</option>
+                        <option value="UYU">UYU — Peso Uruguayo</option>
+                    </select>
+                </div>
                 <div class="field">
                     <label for="public-key">Public Key</label>
                     <input type="text" id="public-key" placeholder="APP_USR-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" />
@@ -282,6 +297,7 @@
         btn.addEventListener('click', async () => {
             const publicKey = document.getElementById('public-key').value.trim();
             const accessToken = document.getElementById('access-token').value.trim();
+            const currency = document.getElementById('currency').value;
 
             if (!publicKey || !accessToken) {
                 status.innerText = 'Por favor ingresa la Public Key y el Access Token.';
@@ -307,7 +323,8 @@
                         price: 99.99,
                         quantity: 1,
                         publicKey: publicKey,
-                        accessToken: accessToken
+                        accessToken: accessToken,
+                        currency: currency
                     })
                 });
 

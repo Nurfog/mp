@@ -11,7 +11,7 @@ namespace MercadoPagoIntegration.Services
 {
     public interface IMercadoPagoService
     {
-        Task<Preference> CreatePreferenceAsync(string title, decimal price, int quantity, string accessToken);
+        Task<Preference> CreatePreferenceAsync(string title, decimal price, int quantity, string accessToken, string currency = "USD");
         Task<Payment> GetPaymentAsync(long paymentId, string accessToken);
     }
 
@@ -24,7 +24,7 @@ namespace MercadoPagoIntegration.Services
             _backUrlBase = configuration["MercadoPago:BackUrlBase"] ?? "https://apimp.norteamericano.cl";
         }
 
-        public async Task<Preference> CreatePreferenceAsync(string title, decimal price, int quantity, string accessToken)
+        public async Task<Preference> CreatePreferenceAsync(string title, decimal price, int quantity, string accessToken, string currency = "USD")
         {
             // Nota: En un entorno de producción con múltiples usuarios concurrentes usando diferentes tokens,
             // MercadoPagoConfig.AccessToken (estático) no es thread-safe.
@@ -39,7 +39,7 @@ namespace MercadoPagoIntegration.Services
                     {
                         Title = title,
                         Quantity = quantity,
-                        CurrencyId = "USD",
+                        CurrencyId = currency,
                         UnitPrice = price,
                     }
                 },

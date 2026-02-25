@@ -9,5 +9,6 @@ namespace MercadoPagoIntegration.Models
         public int Quantity { get; set; } = 1;
         public string AccessToken { get; set; } = string.Empty;
         public string PublicKey { get; set; } = string.Empty;
+        public string Currency { get; set; } = "USD";
     }
 }
