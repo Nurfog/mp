@@ -29,7 +29,6 @@
 /home/juan/dev/mp/MercadoPagoIntegration/obj/Release/net10.0/win-x64/rjsmrazor.dswa.cache.json
 /home/juan/dev/mp/MercadoPagoIntegration/obj/Release/net10.0/win-x64/rjsmcshtml.dswa.cache.json
 /home/juan/dev/mp/MercadoPagoIntegration/obj/Release/net10.0/win-x64/scopedcss/bundle/MercadoPagoIntegration.styles.css
-/home/juan/dev/mp/MercadoPagoIntegration/obj/Release/net10.0/win-x64/compressed/bjeuoovgrr-{0}-js9crey18a-js9crey18a.gz
 /home/juan/dev/mp/MercadoPagoIntegration/obj/Release/net10.0/win-x64/staticwebassets.build.json
 /home/juan/dev/mp/MercadoPagoIntegration/obj/Release/net10.0/win-x64/staticwebassets.build.json.cache
 /home/juan/dev/mp/MercadoPagoIntegration/obj/Release/net10.0/win-x64/staticwebassets.development.json
@@ -43,3 +42,4 @@
 /home/juan/dev/mp/MercadoPagoIntegration/obj/Release/net10.0/win-x64/ref/MercadoPagoIntegration.dll
 /home/juan/dev/mp/MercadoPagoIntegration/bin/Release/net10.0/win-x64/Scalar.AspNetCore.dll
 /home/juan/dev/mp/MercadoPagoIntegration/obj/Release/net10.0/win-x64/MercadoPagoIntegration.sourcelink.json
+/home/juan/dev/mp/MercadoPagoIntegration/obj/Release/net10.0/win-x64/compressed/bjeuoovgrr-{0}-8yjqbscliq-8yjqbscliq.gz

@@ -56,7 +56,7 @@ if [ $? -eq 0 ]; then
     # 5. Eliminar app_offline.htm para reactivar el sitio
     echo "▶️ Reactivando la aplicación..."
     # Usamos -X DELE que es más compatible para borrar archivos vía FTP con curl
-    curl -u "$FTP_USER:$FTP_PASS" "$FTP_URL/app_offline.htm" -X DELE --silent --output /dev/null
+    curl -u "$FTP_USER:$FTP_PASS" "ftp://norteamericano.com/" -Q "DELE /apimp/app_offline.htm" --silent --output /dev/null
     echo "📂 Destino: $FTP_URL"
 else
     echo "❌ Hubo un error durante la subida FTP."
