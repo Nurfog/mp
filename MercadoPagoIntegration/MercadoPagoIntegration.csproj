@@ -9,7 +9,6 @@
 
 
   <ItemGroup>
-    <PackageReference Include="dotenv.net" Version="4.0.1" />
     <PackageReference Include="mercadopago-sdk" Version="2.11.0" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.2" />
     <PackageReference Include="Scalar.AspNetCore" Version="2.12.24" />

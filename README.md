@@ -103,7 +103,7 @@ Usa el script `deploy_ftp.sh` para desplegar en el servidor Windows:
 
 1. **Compilación**: Genera los binarios para `win-x64`.
 2. **app_offline.htm**: Detiene el sitio temporalmente para permitir la sobreescritura de archivos.
-3. **Subida**: Transfiere vía FTP a `ftp://norteamericano.com/apimp`.
+3. **Subida**: Transfiere vía FTP a `ftp://example.com/apimp`.
 4. **Reactivación**: Elimina `app_offline.htm` para volver a poner el sitio en línea.
 
 ```bash
@@ -144,9 +144,29 @@ MercadoPagoIntegration/
 
 ---
 
-## Historial de Cambios
+## Seguridad en Producción (Configuración Segura)
 
-| Fecha | Cambio |
+Para proteger las credenciales y URLs, hemos implementado un sistema de **Configuración Segura vía Compilación**.
+
+### 1. Archivo de Configuración Local (`ConfiguracionSegura.cs`)
+Tus claves y URLs sensibles ahora se almacenan en el archivo:
+`MercadoPagoIntegration/Services/ConfiguracionSegura.cs`
+
+- **Este archivo está en `.gitignore`**: Nunca se subirá a GitHub.
+- **Seguridad**: Los valores se compilan directamente dentro del binario `MercadoPagoIntegration.dll`.
+- **Invisibilidad**: Al ser parte del DLL, no hay archivos de texto plano (`.json` o `.env`) en el servidor que un usuario malintencionado pueda leer fácilmente.
+
+### 2. Cómo actualizar claves
+Si necesitas cambiar un Token o una URL:
+1. Edita el archivo `Services/ConfiguracionSegura.cs` en tu entorno local.
+2. Ejecuta `./deploy_ftp.sh` para recompilar y subir el nuevo DLL al servidor.
+
+---
+
+## Historial de Cambios
+| Fecha | Descripción |
 |-------|--------|
+| 2026-02-25 | Seguridad: Migración a configuración compilada en DLL (Secure Constants). Eliminación de dependencia `dotenv.net`. |
 | 2026-02-25 | Agregados endpoints de retorno BackUrl (`/success`, `/failure`, `/pending`). Webhook activado para consultar estado real del pago. BackUrlBase movida a `appsettings.json`. Frontend actualizado para enviar credenciales. |
 | Ene 2026 | Implementación inicial: create-preference, webhook, UI de prueba, despliegue FTP, Scalar UI. |
+

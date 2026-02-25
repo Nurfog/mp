@@ -21,9 +21,8 @@ namespace MercadoPagoIntegration.Services
 
         public MercadoPagoService(IConfiguration configuration)
         {
-            _backUrlBase = configuration["MERCADOPAGO_BACKURL_BASE"] 
-                           ?? configuration["MercadoPago:BackUrlBase"] 
-                           ?? "https://apimp.norteamericano.cl";
+            // Ahora usamos los valores hardcodeados que se compilan dentro del DLL para máxima seguridad en el servidor.
+            _backUrlBase = ConfiguracionSegura.BackUrlBase;
         }
 
         public async Task<Preference> CreatePreferenceAsync(string title, decimal price, int quantity, string accessToken, string currency = "USD")
