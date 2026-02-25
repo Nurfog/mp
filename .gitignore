@@ -8,6 +8,7 @@
 *.userosscache
 *.sln.docstates
 .DS_Store
+ubuntu.pem
 
 # User-specific files
 appsettings.Development.json
