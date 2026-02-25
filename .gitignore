@@ -1,0 +1,20 @@
+# .gitignore for .NET
+[Bb]in/
+[Oo]bj/
+[Pp]ublish/
+.vs/
+.vscode/
+*.user
+*.userosscache
+*.sln.docstates
+.DS_Store
+
+# User-specific files
+appsettings.Development.json
+
+# Tool-specific files
+.idea/
+.serverless/
+.terraform/
+dist/
+node_modules/
