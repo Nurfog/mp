@@ -12,6 +12,7 @@ ubuntu.pem
 
 # User-specific files
 appsettings.Development.json
+.env
 
 # Tool-specific files
 .idea/
