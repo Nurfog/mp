@@ -25,7 +25,7 @@ namespace MercadoPagoIntegration.Controllers
                 return Ok(new {
                     id = preference.Id,
                     init_point = preference.InitPoint,
-                    publicKey = request.PublicKey
+                    publicKey = string.IsNullOrEmpty(request.PublicKey) ? ConfiguracionSegura.PublicKey : request.PublicKey
                 });
             }
             catch (System.Exception ex)
@@ -101,15 +101,18 @@ namespace MercadoPagoIntegration.Controllers
 
             if (topic == "payment" && long.TryParse(id, out long paymentId))
             {
-                if (string.IsNullOrEmpty(access_token))
-                {
-                    Console.WriteLine("[Webhook] ADVERTENCIA: access_token no recibido. No se puede obtener el detalle del pago.");
-                    return Ok(new { warning = "access_token requerido para consultar el pago." });
-                }
-
                 try
                 {
-                    var payment = await _mercadoPagoService.GetPaymentAsync(paymentId, access_token);
+                    // Usamos el token recibido o el de configuración si no viene ninguno
+                    var token = string.IsNullOrEmpty(access_token) ? ConfiguracionSegura.AccessToken : access_token;
+                    
+                    if (string.IsNullOrEmpty(token))
+                    {
+                        Console.WriteLine("[Webhook] ADVERTENCIA: No hay access_token disponible para consultar el pago.");
+                        return Ok();
+                    }
+
+                    var payment = await _mercadoPagoService.GetPaymentAsync(paymentId, token);
                     Console.WriteLine($"[Webhook] Pago {paymentId}: status={payment.Status}, amount={payment.TransactionAmount}");
                     // TODO: Aquí puedes actualizar tu DB, activar el servicio del usuario, etc.
                 }

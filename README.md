@@ -30,8 +30,8 @@ Genera un `init_point` para redirigir al cliente al entorno de pago de Mercado P
     "price": 99.99,
     "quantity": 1,
     "currency": "USD",
-    "accessToken": "TU_ACCESS_TOKEN",
-    "publicKey": "TU_PUBLIC_KEY"
+    "accessToken": "TU_ACCESS_TOKEN", // Opcional (fallback al DLL)
+    "publicKey": "TU_PUBLIC_KEY"      // Opcional (fallback al DLL)
   }
   ```
 
@@ -91,7 +91,7 @@ Recibe notificaciones automáticas de Mercado Pago cuando cambia el estado de un
 |-----------|-------------|
 | `topic` | Tipo de notificación (ej: `payment`) |
 | `id` | ID del recurso notificado |
-| `access_token` | Token de MP necesario para consultar el detalle del pago |
+| `access_token` | (Opcional) Token de MP para consultar el detalle (fallback al DLL) |
 
 > **Nota**: El parámetro `access_token` debe configurarse en el panel de Mercado Pago al registrar la URL del webhook, o incluirse manualmente al registrar la preferencia.
 

@@ -27,10 +27,9 @@ namespace MercadoPagoIntegration.Services
 
         public async Task<Preference> CreatePreferenceAsync(string title, decimal price, int quantity, string accessToken, string currency = "USD")
         {
-            // Nota: En un entorno de producción con múltiples usuarios concurrentes usando diferentes tokens,
-            // MercadoPagoConfig.AccessToken (estático) no es thread-safe.
-            // Preferiblemente usar RequestOptions si la versión del SDK lo soporta en CreateAsync.
-            MercadoPagoConfig.AccessToken = accessToken;
+            // Si no se recibe token en el request, usamos el harcodeado en ConfiguracionSegura.
+            var token = string.IsNullOrEmpty(accessToken) ? ConfiguracionSegura.AccessToken : accessToken;
+            MercadoPagoConfig.AccessToken = token; 
 
             var request = new PreferenceRequest
             {
@@ -68,7 +67,8 @@ namespace MercadoPagoIntegration.Services
 
         public async Task<Payment> GetPaymentAsync(long paymentId, string accessToken)
         {
-            MercadoPagoConfig.AccessToken = accessToken;
+            var token = string.IsNullOrEmpty(accessToken) ? ConfiguracionSegura.AccessToken : accessToken;
+            MercadoPagoConfig.AccessToken = token;
             try
             {
                 var client = new PaymentClient();
