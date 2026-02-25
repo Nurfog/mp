@@ -13,8 +13,6 @@ ubuntu.pem
 # User-specific files
 appsettings.Development.json
 MercadoPagoIntegration/Services/ConfiguracionSegura.cs
-.env
-.env.example
 
 # Tool-specific files
 .idea/

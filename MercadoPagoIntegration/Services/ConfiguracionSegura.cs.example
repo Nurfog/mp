@@ -1,0 +1,18 @@
+namespace MercadoPagoIntegration.Services
+{
+    /// <summary>
+    /// ESTO ES UN EJEMPLO. 
+    /// Crea una copia de este archivo llamada 'ConfiguracionSegura.cs' (sin el .example)
+    /// y coloca tus credenciales reales allí.
+    /// </summary>
+    public static class ConfiguracionSegura
+    {
+        // La URL base para los retornos de Mercado Pago (Success, Failure, Pending)
+        public const string BackUrlBase = "https://tu-dominio.com/apimp";
+        
+        // Tokens de Mercado Pago obtenidos desde el panel de desarrolladores
+        // ADVERTENCIA: Nunca compartas estos tokens ni los subas a repositorios públicos.
+        public const string AccessToken = "APP_USR-0000000000000000-000000-00000000000000000000000000000000-000000000"; 
+        public const string PublicKey = "APP_USR-00000000-0000-0000-0000-000000000000";
+    }
+}
