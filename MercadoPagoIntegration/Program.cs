@@ -1,10 +1,12 @@
 using Scalar.AspNetCore;
+using MercadoPagoIntegration.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables();
 
 // Add services to the container.
 builder.Services.AddControllers();
+builder.Services.AddScoped<IMercadoPagoService, MercadoPagoService>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll",

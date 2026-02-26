@@ -11,7 +11,7 @@ namespace MercadoPagoIntegration.Services
 {
     public interface IMercadoPagoService
     {
-        Task<Preference> CreatePreferenceAsync(string title, decimal price, int quantity, string accessToken, string currency = "USD");
+        Task<Preference> CreatePreferenceAsync(string title, decimal price, int quantity, string accessToken, string currency = "CLP");
         Task<Payment> GetPaymentAsync(long paymentId, string accessToken);
     }
 
@@ -25,7 +25,7 @@ namespace MercadoPagoIntegration.Services
             _backUrlBase = ConfiguracionSegura.BackUrlBase;
         }
 
-        public async Task<Preference> CreatePreferenceAsync(string title, decimal price, int quantity, string accessToken, string currency = "USD")
+        public async Task<Preference> CreatePreferenceAsync(string title, decimal price, int quantity, string accessToken, string currency = "CLP")
         {
             // Si no se recibe token en el request, usamos el harcodeado en ConfiguracionSegura.
             var token = string.IsNullOrEmpty(accessToken) ? ConfiguracionSegura.AccessToken : accessToken;
@@ -42,6 +42,10 @@ namespace MercadoPagoIntegration.Services
                         CurrencyId = currency,
                         UnitPrice = price,
                     }
+                },
+                Payer = new PreferencePayerRequest
+                {
+                    Email = "test_user_123@testuser.com" // Email de prueba genérico para evitar errores de validación en Sandbox
                 },
                 BackUrls = new PreferenceBackUrlsRequest
                 {
