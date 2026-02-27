@@ -235,6 +235,19 @@
         <h1>Checkout Pro</h1>
         <p class="subtitle">Prueba tu integración en Chile</p>
 
+        <div
+            style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 12px; padding: 15px; margin-bottom: 20px; font-size: 0.85rem; color: #fca5a5;">
+            <strong>⚠️ Nota para Sandbox:</strong><br>
+            Asegúrate de usar una <b>ventana de incógnito</b> y de no iniciar sesión en tu cuenta real de Mercado Pago
+            para pagar.
+        </div>
+
+        <div style="text-align: center; margin-bottom: 20px;">
+            <a href="https://www.mercadopago.cl/developers/es/docs/checkout-pro/additional-content/test-cards"
+                target="_blank" style="color: var(--primary); font-size: 0.8rem; text-decoration: none;">📋 Ver Tarjetas
+                de Prueba Oficiales</a>
+        </div>
+
         <div class="product-card">
             <div class="item-row">
                 <span class="item-label">Producto</span>
@@ -253,6 +266,14 @@
         <div class="credentials-section">
             <details>
                 <summary>⚙️ Credenciales de Mercado Pago (modo prueba)</summary>
+                <div class="field">
+                    <label for="price">Monto a Cobrar</label>
+                    <input type="number" id="price" value="15000" step="1" />
+                </div>
+                <div class="field">
+                    <label for="payer-email">Correo del Pagador (Opcional)</label>
+                    <input type="email" id="payer-email" placeholder="ejemplo@correo.com" />
+                </div>
                 <div class="field">
                     <label for="currency">Moneda</label>
                     <select id="currency">
@@ -298,9 +319,11 @@
             const publicKey = document.getElementById('public-key').value.trim();
             const accessToken = document.getElementById('access-token').value.trim();
             const currency = document.getElementById('currency').value;
+            const price = parseFloat(document.getElementById('price').value);
+            const email = document.getElementById('payer-email').value.trim();
 
-            if (!publicKey || !accessToken) {
-                status.innerText = 'Por favor ingresa la Public Key y el Access Token.';
+            if (!publicKey || !accessToken || isNaN(price) || price <= 0) {
+                status.innerText = 'Por favor ingresa todos los campos correctamente.';
                 status.classList.add('error');
                 return;
             }
@@ -320,11 +343,12 @@
                     },
                     body: JSON.stringify({
                         title: 'Plan Premium Mensual',
-                        price: 99.99,
+                        price: price,
                         quantity: 1,
                         publicKey: publicKey,
                         accessToken: accessToken,
-                        currency: currency
+                        currency: currency,
+                        email: email || null
                     })
                 });
 
@@ -334,27 +358,11 @@
                     status.innerText = 'Cargando botón de pago...';
                     status.classList.add('success');
 
-                    // Inicializar el SDK de Mercado Pago
-                    const mp = new MercadoPago(data.publicKey);
-                    const bricksBuilder = mp.bricks();
+                    status.innerText = 'Redirigiendo al checkout seguro...';
+                    status.classList.add('success');
 
-                    // Renderizar el Wallet Brick
-                    await bricksBuilder.create("wallet", "walletBrick_container", {
-                        initialization: {
-                            preferenceId: data.id,
-                            redirectMode: 'modal' // O 'self'
-                        },
-                        customization: {
-                            texts: {
-                                valueProp: 'smart_option',
-                            }
-                        }
-                    });
-
-                    // Ocultar el botón original y loader ya que ahora tenemos el Brick
-                    btn.style.display = 'none';
-                    loader.style.display = 'none';
-                    status.innerText = '¡Listo! Usa el botón de arriba para pagar.';
+                    // Redirigir al Checkout Pro estándar (soporta invitados)
+                    window.location.href = data.init_point;
                 } else {
                     throw new Error(data.error || 'Error al crear la preferencia');
                 }

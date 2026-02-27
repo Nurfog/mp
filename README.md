@@ -27,9 +27,10 @@ Genera un `init_point` para redirigir al cliente al entorno de pago de Mercado P
   ```json
   {
     "title": "Nombre del Producto",
-    "price": 99.99,
+    "price": 15000,
     "quantity": 1,
-    "currency": "USD",
+    "currency": "CLP",
+    "email": "comprador@correo.com",  // Opcional: auto-completa el checkout y permite pre-asignar usuario
     "accessToken": "TU_ACCESS_TOKEN", // Opcional (fallback al DLL)
     "publicKey": "TU_PUBLIC_KEY"      // Opcional (fallback al DLL)
   }
@@ -163,10 +164,21 @@ Si necesitas cambiar un Token o una URL:
 
 ---
 
+## Guía de Pruebas (Modo Sandbox)
+
+Para probar correctamente la integración sin que Mercado Pago fuerce el Login con tu cuenta real:
+1. Usa siempre **Ventana de Incógnito** (sin sesiones previas activas).
+2. Usa un **correo inventado** en el campo de email (si envías un correo registrado, pedirá contraseña).
+3. Asegúrate de que las credenciales enviadas comiencen por **`TEST-`**.
+4. Usa una **[Tarjeta de Prueba Oficial](https://www.mercadopago.cl/developers/es/docs/checkout-pro/additional-content/test-cards)** de Mercado Pago (ej: Visa aprobada `4010 ... 0001`).
+
+---
+
 ## Historial de Cambios
 | Fecha | Descripción |
 |-------|--------|
-| 2026-02-25 | Seguridad: Migración a configuración compilada en DLL (Secure Constants). Eliminación de dependencia `dotenv.net`. |
+| Feb 2026 | **Guest Checkout**: Soporte para pago sin cuenta vía `init_point` nativo. Parámetro `email` opcional para el pagador. BinaryMode activado. Panel HTML dinámico con precio y correo editables. |
+| Feb 2026 | Seguridad: Migración a configuración compilada. Eliminación de dependencia `dotenv.net`. |
 | 2026-02-25 | Agregados endpoints de retorno BackUrl (`/success`, `/failure`, `/pending`). Webhook activado para consultar estado real del pago. BackUrlBase movida a `appsettings.json`. Frontend actualizado para enviar credenciales. |
 | Ene 2026 | Implementación inicial: create-preference, webhook, UI de prueba, despliegue FTP, Scalar UI. |
 

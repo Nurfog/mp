@@ -32,22 +32,26 @@ curl -T "app_offline.htm" -u "$FTP_USER:$FTP_PASS" "$FTP_URL/app_offline.htm" --
 # 4. Subir archivos vía FTP usando curl
 echo "🚚 Subiendo archivos al servidor FTP..."
 
-# Subir cada archivo recursivamente
 (
     cd "$PUBLISH_DIR"
+    # Buscamos todos los archivos
     find . -type f | while read -r file; do
-        # Limpiar el path del archivo
-        remote_file="${file#./}"
-        remote_dir=$(dirname "$remote_file")
+        # remote_path será algo como "app.dll" o "wwwroot/index.html"
+        remote_path="${file#./}"
         
-        # Crear subdirectorios remotos si es necesario
+        # Obtenemos el directorio si lo hay
+        remote_dir=$(dirname "$remote_path")
+        
         if [ "$remote_dir" != "." ]; then
-            # Intentar crear el directorio. Se ignora el error si ya existe.
-            curl -u "$FTP_USER:$FTP_PASS" "$FTP_URL/" -Q "MKD $remote_dir" --silent --output /dev/null
+            # Intentar crear el directorio remoto. El -Q envía un comando crudo antes de la transferencia.
+            # No usamos el path completo del FTP_URL aquí para evitar confusiones de ruta absoluta.
+            echo "  [Folder] Creando/Verificando: $remote_dir"
+            curl -u "$FTP_USER:$FTP_PASS" "ftp://norteamericano.com/" -Q "MKD /apimp/$remote_dir" --silent --output /dev/null
         fi
         
-        echo "  -> Subiendo: $remote_file"
-        curl -T "$file" -u "$FTP_USER:$FTP_PASS" "$FTP_URL/$remote_file" --silent
+        echo "  [File] Subiendo: $remote_path"
+        # Subida directa al path completo
+        curl -u "$FTP_USER:$FTP_PASS" -T "$remote_path" "$FTP_URL/$remote_path" --silent
     done
 )
 

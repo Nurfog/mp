@@ -10,5 +10,6 @@ namespace MercadoPagoIntegration.Models
         public string AccessToken { get; set; } = string.Empty;
         public string PublicKey { get; set; } = string.Empty;
         public string Currency { get; set; } = "CLP";
+        public string? Email { get; set; }
     }
 }

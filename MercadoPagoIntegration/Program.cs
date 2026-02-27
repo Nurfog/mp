@@ -1,8 +1,12 @@
 using Scalar.AspNetCore;
 using MercadoPagoIntegration.Services;
+using MercadoPago.Config;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables();
+
+// Configurar el SDK con tu Test Access Token
+MercadoPagoConfig.AccessToken = builder.Configuration["MercadoPago:AccessToken"];
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -24,12 +28,13 @@ var app = builder.Build();
 
 // Standard Middleware
 app.UseHttpsRedirection();
-app.UseStaticFiles();
+app.UseDefaultFiles();
+app.UseStaticFiles(); 
 app.UseCors("AllowAll");
 app.UseAuthorization();
 
 // 1. Root Health Check
-app.MapGet("/", () => "Mercado Pago API is running. Documentation: /scalar");
+app.MapGet("/health", () => "Mercado Pago API is running.");
 
 // 2. OpenAPI JSON
 app.MapOpenApi();

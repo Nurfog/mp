@@ -11,7 +11,7 @@ namespace MercadoPagoIntegration.Services
 {
     public interface IMercadoPagoService
     {
-        Task<Preference> CreatePreferenceAsync(string title, decimal price, int quantity, string accessToken, string currency = "CLP");
+        Task<Preference> CreatePreferenceAsync(string title, decimal price, int quantity, string accessToken, string currency = "CLP", string? email = null);
         Task<Payment> GetPaymentAsync(long paymentId, string accessToken);
     }
 
@@ -25,7 +25,7 @@ namespace MercadoPagoIntegration.Services
             _backUrlBase = ConfiguracionSegura.BackUrlBase;
         }
 
-        public async Task<Preference> CreatePreferenceAsync(string title, decimal price, int quantity, string accessToken, string currency = "CLP")
+        public async Task<Preference> CreatePreferenceAsync(string title, decimal price, int quantity, string accessToken, string currency = "CLP", string? email = null)
         {
             // Si no se recibe token en el request, usamos el harcodeado en ConfiguracionSegura.
             var token = string.IsNullOrEmpty(accessToken) ? ConfiguracionSegura.AccessToken : accessToken;
@@ -45,7 +45,7 @@ namespace MercadoPagoIntegration.Services
                 },
                 Payer = new PreferencePayerRequest
                 {
-                    Email = "test_user_123@testuser.com" // Email de prueba genérico para evitar errores de validación en Sandbox
+                    Email = email // El email ahora viene por parámetro
                 },
                 BackUrls = new PreferenceBackUrlsRequest
                 {
@@ -54,6 +54,8 @@ namespace MercadoPagoIntegration.Services
                     Pending = $"{_backUrlBase}/api/checkout/pending",
                 },
                 AutoReturn = "approved",
+                BinaryMode = true,
+                StatementDescriptor = "Instituto Chileno Norteamericano Testingcenter",
             };
 
             try
