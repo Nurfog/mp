@@ -11,5 +11,9 @@ namespace MercadoPagoIntegration.Models
         public string PublicKey { get; set; } = string.Empty;
         public string Currency { get; set; } = "CLP";
         public string? Email { get; set; }
+        public string? SuccessUrl { get; set; }
+        public string? FailureUrl { get; set; }
+        public string? PendingUrl { get; set; }
+        public string? BackUrlBase { get; set; }
     }
 }

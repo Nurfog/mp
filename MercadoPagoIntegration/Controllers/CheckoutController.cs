@@ -21,13 +21,24 @@ namespace MercadoPagoIntegration.Controllers
         {
             try
             {
+                // Determinar BackUrlBase dinámica
+                var backUrlBase = request.BackUrlBase;
+                if (string.IsNullOrEmpty(backUrlBase))
+                {
+                    backUrlBase = $"{Request.Scheme}://{Request.Host}";
+                }
+
                 var preference = await _mercadoPagoService.CreatePreferenceAsync(
                     request.Title, 
                     request.Price, 
                     request.Quantity, 
                     request.AccessToken, 
                     request.Currency,
-                    request.Email
+                    request.Email,
+                    request.SuccessUrl,
+                    request.FailureUrl,
+                    request.PendingUrl,
+                    backUrlBase
                 );
                 return Ok(new {
                     id = preference.Id,
@@ -42,14 +53,23 @@ namespace MercadoPagoIntegration.Controllers
         }
 
         // ─── BackUrl: retorno tras pago aprobado ───────────────────────────
+        // ─── BackUrl: retorno tras pago aprobado ───────────────────────────
         [HttpGet("success")]
         public IActionResult PaymentSuccess(
             [FromQuery(Name = "payment_id")] string? paymentId,
             [FromQuery(Name = "status")] string? status,
             [FromQuery(Name = "external_reference")] string? externalReference,
-            [FromQuery(Name = "merchant_order_id")] string? merchantOrderId)
+            [FromQuery(Name = "merchant_order_id")] string? merchantOrderId,
+            [FromQuery] string? redirectUrl)
         {
             Console.WriteLine($"[BackUrl] SUCCESS - payment_id={paymentId}, status={status}, ref={externalReference}");
+
+            if (!string.IsNullOrEmpty(redirectUrl))
+            {
+                var finalUrl = BuildRedirectUrl(redirectUrl, paymentId, status, externalReference, merchantOrderId);
+                return Redirect(finalUrl);
+            }
+
             return Ok(new
             {
                 result = "success",
@@ -66,9 +86,17 @@ namespace MercadoPagoIntegration.Controllers
         public IActionResult PaymentFailure(
             [FromQuery(Name = "payment_id")] string? paymentId,
             [FromQuery(Name = "status")] string? status,
-            [FromQuery(Name = "external_reference")] string? externalReference)
+            [FromQuery(Name = "external_reference")] string? externalReference,
+            [FromQuery] string? redirectUrl)
         {
             Console.WriteLine($"[BackUrl] FAILURE - payment_id={paymentId}, status={status}, ref={externalReference}");
+
+            if (!string.IsNullOrEmpty(redirectUrl))
+            {
+                var finalUrl = BuildRedirectUrl(redirectUrl, paymentId, status, externalReference);
+                return Redirect(finalUrl);
+            }
+
             return Ok(new
             {
                 result = "failure",
@@ -84,9 +112,17 @@ namespace MercadoPagoIntegration.Controllers
         public IActionResult PaymentPending(
             [FromQuery(Name = "payment_id")] string? paymentId,
             [FromQuery(Name = "status")] string? status,
-            [FromQuery(Name = "external_reference")] string? externalReference)
+            [FromQuery(Name = "external_reference")] string? externalReference,
+            [FromQuery] string? redirectUrl)
         {
             Console.WriteLine($"[BackUrl] PENDING - payment_id={paymentId}, status={status}, ref={externalReference}");
+
+            if (!string.IsNullOrEmpty(redirectUrl))
+            {
+                var finalUrl = BuildRedirectUrl(redirectUrl, paymentId, status, externalReference);
+                return Redirect(finalUrl);
+            }
+
             return Ok(new
             {
                 result = "pending",
@@ -95,6 +131,20 @@ namespace MercadoPagoIntegration.Controllers
                 external_reference = externalReference,
                 message = "El pago está pendiente de confirmación."
             });
+        }
+
+        private string BuildRedirectUrl(string baseUrl, string? paymentId, string? status, string? externalReference, string? merchantOrderId = null)
+        {
+            var uriBuilder = new System.UriBuilder(baseUrl);
+            var query = System.Web.HttpUtility.ParseQueryString(uriBuilder.Query);
+
+            if (!string.IsNullOrEmpty(paymentId)) query["payment_id"] = paymentId;
+            if (!string.IsNullOrEmpty(status)) query["status"] = status;
+            if (!string.IsNullOrEmpty(externalReference)) query["external_reference"] = externalReference;
+            if (!string.IsNullOrEmpty(merchantOrderId)) query["merchant_order_id"] = merchantOrderId;
+
+            uriBuilder.Query = query.ToString();
+            return uriBuilder.ToString();
         }
 
         // ─── Webhook de notificaciones IPN ────────────────────────────────

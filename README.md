@@ -31,6 +31,10 @@ Genera un `init_point` para redirigir al cliente al entorno de pago de Mercado P
     "quantity": 1,
     "currency": "CLP",
     "email": "comprador@correo.com",  // Opcional: auto-completa el checkout y permite pre-asignar usuario
+    "successUrl": "https://tu-sitio.com/exito", // Opcional: Redirige aquí tras pago aprobado
+    "failureUrl": "https://tu-sitio.com/error", // Opcional: Redirige aquí tras pago fallido
+    "pendingUrl": "https://tu-sitio.com/espera", // Opcional: Redirige aquí tras pago pendiente
+    "backUrlBase": "https://miproxy.com",     // Opcional: Fuerza la URL base para Mercado Pago
     "accessToken": "TU_ACCESS_TOKEN", // Opcional (fallback al DLL)
     "publicKey": "TU_PUBLIC_KEY"      // Opcional (fallback al DLL)
   }
@@ -51,15 +55,31 @@ Genera un `init_point` para redirigir al cliente al entorno de pago de Mercado P
 
 ### 2. URLs de Retorno (BackUrls)
 
-Mercado Pago redirige automáticamente al usuario a estos endpoints una vez finalizado el flujo de pago. Todos leen los query params enviados por MP (`payment_id`, `status`, `external_reference`, `merchant_order_id`).
+Mercado Pago redirige automáticamente al usuario a estos endpoints una vez finalizado el flujo de pago. Estos endpoints capturan los parámetros enviados por MP y, opcionalmente, un parámetro de redirección propio:
 
-| Método | Ruta | Cuándo se invoca |
-|--------|------|-----------------|
-| `GET` | `/api/Checkout/success` | Pago aprobado |
-| `GET` | `/api/Checkout/failure` | Pago rechazado o cancelado |
-| `GET` | `/api/Checkout/pending` | Pago pendiente de confirmación |
+**Parámetros aceptados:**
+- `payment_id`, `status`, `external_reference`, `merchant_order_id`: Enviados por Mercado Pago.
+- `redirectUrl`: (Opcional) URL de tu frontend donde se redirigirá al usuario final.
 
-**Respuesta de ejemplo (`/success`)**:
+| Método | Ruta | Propósito |
+|--------|------|-----------|
+| `GET` | `/api/Checkout/success` | Procesar pago aprobado y redirigir |
+| `GET` | `/api/Checkout/failure` | Procesar pago rechazado/cancelado y redirigir |
+| `GET` | `/api/Checkout/pending` | Procesar pago pendiente y redirigir |
+
+**Comportamiento de Redirección:**
+Si al crear la preferencia enviaste las URLs de retorno (`successUrl`, `failureUrl`, `pendingUrl`), el backend recibirá automáticamente el parámetro `redirectUrl`. En este caso:
+1. El backend **no** retornará JSON.
+2. Realizará una **redirección HTTP (302)** a la URL indicada en `redirectUrl`.
+3. Adjuntará todos los parámetros de Mercado Pago a esa URL para que tu frontend los procese.
+
+**Ejemplo de flujo con `successUrl`:**
+1. Solicitas preferencia con `"successUrl": "https://miapp.com/pago-ok"`.
+2. Mercado Pago redirige a `/api/Checkout/success?payment_id=123&status=approved&...&redirectUrl=https://miapp.com/pago-ok`.
+3. El backend redirige a `https://miapp.com/pago-ok?payment_id=123&status=approved&...`.
+
+Si **no** envías URLs opcionales, el endpoint responderá con un JSON estándar:
+
 ```json
 {
   "result": "success",
@@ -71,14 +91,10 @@ Mercado Pago redirige automáticamente al usuario a estos endpoints una vez fina
 }
 ```
 
-La URL base de retorno se configura en `appsettings.json`:
-```json
-{
-  "MercadoPago": {
-    "BackUrlBase": "https://apimp.norteamericano.cl"
-  }
-}
-```
+**Detección Dinámica de URL Base:**
+La API detecta automáticamente el esquema (`http`/`https`) y el host de la solicitud actual para construir las URLs de retorno. Esto significa que **no necesitas configurar `BackUrlBase`** si tu frontend está en el mismo dominio o si usas el dominio estándar.
+
+Si necesitas forzar una URL base distinta (ej: detrás de un túnel o proxy), puedes enviarla en el parámetro `backUrlBase` al crear la preferencia.
 
 ---
 
@@ -177,6 +193,7 @@ Para probar correctamente la integración sin que Mercado Pago fuerce el Login c
 ## Historial de Cambios
 | Fecha | Descripción |
 |-------|--------|
+| Marzo 2026 | **Redirección Dinámica**: Agregados parámetros `successUrl`, `failureUrl` y `pendingUrl` en la creación de preferencia. El backend ahora puede redirigir al usuario automáticamente a URLs externas tras el pago. |
 | Feb 2026 | **Guest Checkout**: Soporte para pago sin cuenta vía `init_point` nativo. Parámetro `email` opcional para el pagador. BinaryMode activado. Panel HTML dinámico con precio y correo editables. |
 | Feb 2026 | Seguridad: Migración a configuración compilada. Eliminación de dependencia `dotenv.net`. |
 | 2026-02-25 | Agregados endpoints de retorno BackUrl (`/success`, `/failure`, `/pending`). Webhook activado para consultar estado real del pago. BackUrlBase movida a `appsettings.json`. Frontend actualizado para enviar credenciales. |

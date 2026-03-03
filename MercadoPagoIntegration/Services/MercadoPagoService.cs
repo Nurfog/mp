@@ -11,7 +11,7 @@ namespace MercadoPagoIntegration.Services
 {
     public interface IMercadoPagoService
     {
-        Task<Preference> CreatePreferenceAsync(string title, decimal price, int quantity, string accessToken, string currency = "CLP", string? email = null);
+        Task<Preference> CreatePreferenceAsync(string title, decimal price, int quantity, string accessToken, string currency = "CLP", string? email = null, string? successUrl = null, string? failureUrl = null, string? pendingUrl = null, string? backUrlBase = null);
         Task<Payment> GetPaymentAsync(long paymentId, string accessToken);
     }
 
@@ -21,15 +21,28 @@ namespace MercadoPagoIntegration.Services
 
         public MercadoPagoService(IConfiguration configuration)
         {
-            // Ahora usamos los valores hardcodeados que se compilan dentro del DLL para máxima seguridad en el servidor.
+            // Valor por defecto configurado globalmente
             _backUrlBase = ConfiguracionSegura.BackUrlBase;
         }
 
-        public async Task<Preference> CreatePreferenceAsync(string title, decimal price, int quantity, string accessToken, string currency = "CLP", string? email = null)
+        public async Task<Preference> CreatePreferenceAsync(string title, decimal price, int quantity, string accessToken, string currency = "CLP", string? email = null, string? successUrl = null, string? failureUrl = null, string? pendingUrl = null, string? backUrlBase = null)
         {
             // Si no se recibe token en el request, usamos el harcodeado en ConfiguracionSegura.
             var token = string.IsNullOrEmpty(accessToken) ? ConfiguracionSegura.AccessToken : accessToken;
             MercadoPagoConfig.AccessToken = token; 
+
+            // Determinar la URL base a usar
+            var effectiveBackUrlBase = string.IsNullOrEmpty(backUrlBase) ? _backUrlBase : backUrlBase;
+
+            // Helper para construir las BackUrls con el parámetro redirectUrl si existe
+            string BuildBackUrl(string route, string? redirectUrl)
+            {
+                var baseUrl = $"{effectiveBackUrlBase}/api/checkout/{route}";
+                if (string.IsNullOrEmpty(redirectUrl)) return baseUrl;
+                
+                var separator = baseUrl.Contains("?") ? "&" : "?";
+                return $"{baseUrl}{separator}redirectUrl={System.Net.WebUtility.UrlEncode(redirectUrl)}";
+            }
 
             var request = new PreferenceRequest
             {
@@ -49,9 +62,9 @@ namespace MercadoPagoIntegration.Services
                 },
                 BackUrls = new PreferenceBackUrlsRequest
                 {
-                    Success = $"{_backUrlBase}/api/checkout/success",
-                    Failure = $"{_backUrlBase}/api/checkout/failure",
-                    Pending = $"{_backUrlBase}/api/checkout/pending",
+                    Success = BuildBackUrl("success", successUrl),
+                    Failure = BuildBackUrl("failure", failureUrl),
+                    Pending = BuildBackUrl("pending", pendingUrl),
                 },
                 AutoReturn = "approved",
                 BinaryMode = true,
