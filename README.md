@@ -55,30 +55,24 @@ Genera un `init_point` para redirigir al cliente al entorno de pago de Mercado P
 
 ### 2. URLs de Retorno (BackUrls)
 
-Mercado Pago redirige automáticamente al usuario a estos endpoints una vez finalizado el flujo de pago. Estos endpoints capturan los parámetros enviados por MP y, opcionalmente, un parámetro de redirección propio:
+Las URLs proporcionadas en la creación de preferencia (`successUrl`, `failureUrl`, `pendingUrl`) se configuran directamente en Mercado Pago. Esto significa que **Mercado Pago redirigirá al usuario directamente a la URL de tu aplicación** sin pasar por esta API.
 
-**Parámetros aceptados:**
-- `payment_id`, `status`, `external_reference`, `merchant_order_id`: Enviados por Mercado Pago.
-- `redirectUrl`: (Opcional) URL de tu frontend donde se redirigirá al usuario final.
-
-| Método | Ruta | Propósito |
-|--------|------|-----------|
-| `GET` | `/api/Checkout/success` | Procesar pago aprobado y redirigir |
-| `GET` | `/api/Checkout/failure` | Procesar pago rechazado/cancelado y redirigir |
-| `GET` | `/api/Checkout/pending` | Procesar pago pendiente y redirigir |
-
-**Comportamiento de Redirección:**
-Si al crear la preferencia enviaste las URLs de retorno (`successUrl`, `failureUrl`, `pendingUrl`), el backend recibirá automáticamente el parámetro `redirectUrl`. En este caso:
-1. El backend **no** retornará JSON.
-2. Realizará una **redirección HTTP (302)** a la URL indicada en `redirectUrl`.
-3. Adjuntará todos los parámetros de Mercado Pago a esa URL para que tu frontend los procese.
+**Comportamiento de Redirección Directa:**
+Si enviaste las URLs de retorno al crear la preferencia, el flujo será:
+1. El usuario finaliza el pago.
+2. Mercado Pago redirige al usuario **directamente** a tu URL indicada.
+3. Al hacer la redirección, Mercado Pago adjunta automáticamente en tu URL los parámetros del pago (`payment_id`, `status`, `external_reference`, `merchant_order_id`, etc.). Tu aplicación (ej. frontend) debe procesar estos query params de forma nativa.
 
 **Ejemplo de flujo con `successUrl`:**
 1. Solicitas preferencia con `"successUrl": "https://miapp.com/pago-ok"`.
-2. Mercado Pago redirige a `/api/Checkout/success?payment_id=123&status=approved&...&redirectUrl=https://miapp.com/pago-ok`.
-3. El backend redirige a `https://miapp.com/pago-ok?payment_id=123&status=approved&...`.
+2. Mercado Pago redirige al usuario a: `https://miapp.com/pago-ok?payment_id=123&status=approved&external_reference=null&merchant_order_id=987`...
 
-Si **no** envías URLs opcionales, el endpoint responderá con un JSON estándar:
+> **Nota:** Con esta modalidad, la API ya no actúa como intermediario para la redirección.
+
+---
+
+**Comportamiento por defecto (Fallback a la API):**
+Si **no** envías URLs opcionales, Mercado Pago redirigirá de manera predeterminada a los endpoints incluidos en esta API (`/api/Checkout/success`, `/failure`, `/pending`). Estos endpoints leerán los query params de MP y responderán con un JSON estándar:
 
 ```json
 {

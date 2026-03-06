@@ -34,14 +34,14 @@ namespace MercadoPagoIntegration.Services
             // Determinar la URL base a usar
             var effectiveBackUrlBase = string.IsNullOrEmpty(backUrlBase) ? _backUrlBase : backUrlBase;
 
-            // Helper para construir las BackUrls con el parámetro redirectUrl si existe
-            string BuildBackUrl(string route, string? redirectUrl)
+            // Helper para construir las BackUrls usando la URL del cliente directamente si existe, si no usar el de la API
+            string BuildBackUrl(string route, string? directUrl)
             {
-                var baseUrl = $"{effectiveBackUrlBase}/api/checkout/{route}";
-                if (string.IsNullOrEmpty(redirectUrl)) return baseUrl;
-                
-                var separator = baseUrl.Contains("?") ? "&" : "?";
-                return $"{baseUrl}{separator}redirectUrl={System.Net.WebUtility.UrlEncode(redirectUrl)}";
+                if (!string.IsNullOrEmpty(directUrl))
+                {
+                    return directUrl;
+                }
+                return $"{effectiveBackUrlBase}/api/checkout/{route}";
             }
 
             var request = new PreferenceRequest
