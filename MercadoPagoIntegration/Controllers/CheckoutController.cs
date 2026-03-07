@@ -38,7 +38,8 @@ namespace MercadoPagoIntegration.Controllers
                     request.SuccessUrl,
                     request.FailureUrl,
                     request.PendingUrl,
-                    backUrlBase
+                    backUrlBase,
+                    request.DefaultReturnUrl
                 );
                 return Ok(new {
                     id = preference.Id,

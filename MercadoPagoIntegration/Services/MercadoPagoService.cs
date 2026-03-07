@@ -11,7 +11,7 @@ namespace MercadoPagoIntegration.Services
 {
     public interface IMercadoPagoService
     {
-        Task<Preference> CreatePreferenceAsync(string title, decimal price, int quantity, string accessToken, string currency = "CLP", string? email = null, string? successUrl = null, string? failureUrl = null, string? pendingUrl = null, string? backUrlBase = null);
+        Task<Preference> CreatePreferenceAsync(string title, decimal price, int quantity, string accessToken, string currency = "CLP", string? email = null, string? successUrl = null, string? failureUrl = null, string? pendingUrl = null, string? backUrlBase = null, string? defaultReturnUrl = null);
         Task<Payment> GetPaymentAsync(long paymentId, string accessToken);
     }
 
@@ -25,7 +25,7 @@ namespace MercadoPagoIntegration.Services
             _backUrlBase = ConfiguracionSegura.BackUrlBase;
         }
 
-        public async Task<Preference> CreatePreferenceAsync(string title, decimal price, int quantity, string accessToken, string currency = "CLP", string? email = null, string? successUrl = null, string? failureUrl = null, string? pendingUrl = null, string? backUrlBase = null)
+        public async Task<Preference> CreatePreferenceAsync(string title, decimal price, int quantity, string accessToken, string currency = "CLP", string? email = null, string? successUrl = null, string? failureUrl = null, string? pendingUrl = null, string? backUrlBase = null, string? defaultReturnUrl = null)
         {
             // Si no se recibe token en el request, usamos el harcodeado en ConfiguracionSegura.
             var token = string.IsNullOrEmpty(accessToken) ? ConfiguracionSegura.AccessToken : accessToken;
@@ -40,6 +40,10 @@ namespace MercadoPagoIntegration.Services
                 if (!string.IsNullOrEmpty(directUrl))
                 {
                     return directUrl;
+                }
+                if (!string.IsNullOrEmpty(defaultReturnUrl))
+                {
+                    return defaultReturnUrl;
                 }
                 return $"{effectiveBackUrlBase}/api/checkout/{route}";
             }
@@ -66,7 +70,7 @@ namespace MercadoPagoIntegration.Services
                     Failure = BuildBackUrl("failure", failureUrl),
                     Pending = BuildBackUrl("pending", pendingUrl),
                 },
-                AutoReturn = "approved",
+                AutoReturn = "all", // Cambiado de "approved" a "all" para que retorne siempre
                 BinaryMode = true,
                 StatementDescriptor = "Instituto Chileno Norteamericano Testingcenter",
             };

@@ -34,6 +34,7 @@ Genera un `init_point` para redirigir al cliente al entorno de pago de Mercado P
     "successUrl": "https://tu-sitio.com/exito", // Opcional: Redirige aquí tras pago aprobado
     "failureUrl": "https://tu-sitio.com/error", // Opcional: Redirige aquí tras pago fallido
     "pendingUrl": "https://tu-sitio.com/espera", // Opcional: Redirige aquí tras pago pendiente
+    "defaultReturnUrl": "https://tu-sitio.com", // Opcional: URL por defecto para el botón "Volver" o fallbacks
     "backUrlBase": "https://miproxy.com",     // Opcional: Fuerza la URL base para Mercado Pago
     "accessToken": "TU_ACCESS_TOKEN", // Opcional (fallback al DLL)
     "publicKey": "TU_PUBLIC_KEY"      // Opcional (fallback al DLL)
@@ -60,7 +61,7 @@ Las URLs proporcionadas en la creación de preferencia (`successUrl`, `failureUr
 **Comportamiento de Redirección Directa:**
 Si enviaste las URLs de retorno al crear la preferencia, el flujo será:
 1. El usuario finaliza el pago.
-2. Mercado Pago redirige al usuario **directamente** a tu URL indicada.
+2. Mercado Pago redirige al usuario **directamente** a tu URL indicada (o a `defaultReturnUrl` si alguna falto o el usuario presionó "Volver").
 3. Al hacer la redirección, Mercado Pago adjunta automáticamente en tu URL los parámetros del pago (`payment_id`, `status`, `external_reference`, `merchant_order_id`, etc.). Tu aplicación (ej. frontend) debe procesar estos query params de forma nativa.
 
 **Ejemplo de flujo con `successUrl`:**
@@ -146,8 +147,6 @@ MercadoPagoIntegration/
 │   └── MercadoPagoService.cs   # Lógica del SDK de Mercado Pago
 ├── Models/
 │   └── CheckoutRequest.cs      # Modelo de la solicitud de pago
-├── wwwroot/
-│   └── index.html              # UI de prueba (Checkout Pro)
 ├── appsettings.json            # Configuración (BackUrlBase, logging)
 ├── Program.cs                  # Middleware, OpenAPI, Scalar
 └── deploy_ftp.sh               # Script de despliegue automatizado
@@ -187,8 +186,8 @@ Para probar correctamente la integración sin que Mercado Pago fuerce el Login c
 ## Historial de Cambios
 | Fecha | Descripción |
 |-------|--------|
-| Marzo 2026 | **Redirección Dinámica**: Agregados parámetros `successUrl`, `failureUrl` y `pendingUrl` en la creación de preferencia. El backend ahora puede redirigir al usuario automáticamente a URLs externas tras el pago. |
-| Feb 2026 | **Guest Checkout**: Soporte para pago sin cuenta vía `init_point` nativo. Parámetro `email` opcional para el pagador. BinaryMode activado. Panel HTML dinámico con precio y correo editables. |
+| Marzo 2026 | **Redirección Directa y DefaultReturnUrl**: Mercado Pago ahora redirige directamente al cliente con sus parámetros query. Agregado `defaultReturnUrl` para controlar el botón "Volver a la tienda". La interfaz de prueba (index.html) fue removida. |
+| Feb 2026 | **Guest Checkout**: Soporte para pago sin cuenta vía `init_point` nativo. Parámetro `email` opcional para el pagador. BinaryMode activado. |
 | Feb 2026 | Seguridad: Migración a configuración compilada. Eliminación de dependencia `dotenv.net`. |
 | 2026-02-25 | Agregados endpoints de retorno BackUrl (`/success`, `/failure`, `/pending`). Webhook activado para consultar estado real del pago. BackUrlBase movida a `appsettings.json`. Frontend actualizado para enviar credenciales. |
 | Ene 2026 | Implementación inicial: create-preference, webhook, UI de prueba, despliegue FTP, Scalar UI. |

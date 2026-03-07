@@ -15,5 +15,6 @@ namespace MercadoPagoIntegration.Models
         public string? FailureUrl { get; set; }
         public string? PendingUrl { get; set; }
         public string? BackUrlBase { get; set; }
+        public string? DefaultReturnUrl { get; set; }
     }
 }
